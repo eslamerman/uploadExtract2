@@ -1,61 +1,37 @@
 import streamlit as st
-import easyocr
-import cv2
-from PIL import Image  # For image processing with EasyOCR
-import numpy as np # For handling OpenCV image formats
+import whisper
+import os
+
+# Initialize the Whisper model (do this once)
+model = whisper.load_model("base")  # Or another model size like "small", "medium", "large"
 
 
-
-# Initialize EasyOCR reader (do this once)
-reader = easyocr.Reader(['en'])  # Specify language(s)
-
-
-
-def extract_text_from_uploaded_video(uploaded_file):
-    """Extracts text from an uploaded video file directly using EasyOCR."""
+def transcribe_audio(audio_file):
+    """Transcribes audio from an uploaded MP3 file using Whisper."""
     try:
-        # Create a temporary file to store the uploaded video
-        with open("temp_video.mp4", "wb") as temp_file: 
-            temp_file.write(uploaded_file.read()) # Write the uploaded file contents
+        with open("temp_audio.mp3", "wb") as temp_file:
+            temp_file.write(audio_file.read())
 
-        cap = cv2.VideoCapture("temp_video.mp4")
-        extracted_text = ""
+        # Perform transcription
+        result = model.transcribe("temp_audio.mp3")
+        text = result["text"]
 
-        while(cap.isOpened()):
-            ret, frame = cap.read()
-            if ret == True:
-                pil_image = Image.fromarray(frame)
-                ocr_results = reader.readtext(pil_image)
+        os.remove("temp_audio.mp3")  # Clean up temporary file
 
-                for result in ocr_results:
-                    extracted_text += result[1] + " "
-
-            else:
-                break 
-
-        cap.release()
-        os.remove("temp_video.mp4") # Clean up
-
-        return extracted_text
-
+        return text
     except Exception as e:
-        st.error(f"Error extracting text from video: {e}")
+        st.error(f"Error transcribing audio: {e}")
         return None
 
 
-
-
 # Streamlit app
-st.title("Video Text Extraction")
+st.title("Audio Transcription")
 
-
-uploaded_file = st.file_uploader("Choose a video file", type=["mp4", "mov", "avi"])  # Adjust file types
-
+uploaded_file = st.file_uploader("Choose an MP3 audio file", type=["mp3"])
 
 if uploaded_file is not None:
+    transcribed_text = transcribe_audio(uploaded_file)
 
-    extracted_text = extract_text_from_uploaded_video(uploaded_file)
-
-    if extracted_text:
-        st.header("Extracted Text")
-        st.text_area(" ", extracted_text, height=300)
+    if transcribed_text:
+        st.header("Transcribed Text")
+        st.text_area(" ", transcribed_text, height=300)
