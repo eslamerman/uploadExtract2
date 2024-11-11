@@ -1,9 +1,26 @@
 import streamlit as st
 import whisper
 import os
+import ffmpeg  # Explicitly import ffmpeg
+
+# Check FFmpeg installation
+try:
+    ffmpeg.probe("temp_audio.mp3") # or any audio file
+    print("FFmpeg installed and working.")
+except Exception as e:
+    print(f"FFmpeg problem: {e}")
+    st.error("FFmpeg is not installed or not working properly. Please check your environment.")
+    st.stop() # Stop app execution if FFmpeg has issues
 
 # Initialize the Whisper model (do this once)
-model = whisper.load_model("base")  # Or another model size like "small", "medium", "large"
+try:
+    import whisper
+    whisper._MODELS = whisper._download_models(whisper._MODELS) # Download models if necessary.
+    model = whisper.load_model("base")
+
+except Exception as e:
+    st.error(f"Error loading Whisper model: {e}")  # Display error message in Streamlit
+    st.stop()
 
 
 def transcribe_audio(audio_file):
