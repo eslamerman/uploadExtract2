@@ -1,7 +1,7 @@
 import streamlit as st
 import whisper
 import os
-import ffmpeg  # Explicitly import ffmpeg
+#import ffmpeg  # Explicitly import ffmpeg
 
 
 #os.environ["PATH"] += ":/usr/bin/ffmpeg"  # Adjust path as needed
