@@ -1,5 +1,4 @@
 streamlit
-easyocr
-opencv-python
-pillow
 numpy
+whisper
+ffmpeg-python # For whisper
