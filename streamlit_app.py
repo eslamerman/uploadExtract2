@@ -1,10 +1,10 @@
 import streamlit as st
 import whisper
 import os
-#import ffmpeg  # Explicitly import ffmpeg
+import ffmpeg  # Explicitly import ffmpeg
 
-import os
-os.environ["PATH"] += ":/usr/bin/ffmpeg"  # Adjust path as needed
+
+#os.environ["PATH"] += ":/usr/bin/ffmpeg"  # Adjust path as needed
 # Check FFmpeg installation
 try:
     ffmpeg.probe("temp_audio.mp3") # or any audio file
